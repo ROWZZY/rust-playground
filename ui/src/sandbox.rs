@@ -117,7 +117,7 @@ fn basic_secure_docker_command() -> Command {
     let mut cmd = docker_command!(
         "run",
         "--platform",
-        "linux/amd64",
+        "linux/arm64",
         "--detach",
         "--cap-drop=ALL",
         // Needed to allow overwriting the file
