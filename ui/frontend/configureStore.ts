@@ -1,13 +1,13 @@
 import { merge } from 'lodash';
-import { applyMiddleware, compose, createStore } from 'redux';
 import { useDispatch } from 'react-redux';
-import thunk, { ThunkDispatch } from 'redux-thunk';
 import * as url from 'url';
+import { configureStore as reduxConfigureStore } from '@reduxjs/toolkit';
+import type {} from 'redux-thunk/extend-redux';
 
-import { Action, initializeApplication } from './actions';
+import { initializeApplication } from './actions';
 import initializeLocalStorage from './local_storage';
 import initializeSessionStorage from './session_storage';
-import playgroundApp, { State } from './reducers';
+import reducer from './reducers';
 
 export default function configureStore(window: Window) {
   const baseUrl = url.resolve(window.location.href, '/');
@@ -17,22 +17,22 @@ export default function configureStore(window: Window) {
       baseUrl,
     },
   };
-  const initialAppState = playgroundApp(undefined, initializeApplication());
+  const initialAppState = reducer(undefined, initializeApplication());
 
   const localStorage = initializeLocalStorage();
   const sessionStorage = initializeSessionStorage();
 
-  const initialState = merge(
+  const preloadedState = merge(
     initialAppState,
     initialGlobalState,
     localStorage.initialState,
     sessionStorage.initialState,
   );
 
-  const middlewares = applyMiddleware<ThunkDispatch<State, {}, Action>, {}>(thunk);
-  const composeEnhancers: typeof compose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-  const enhancers = composeEnhancers(middlewares);
-  const store = createStore(playgroundApp, initialState, enhancers);
+  const store = reduxConfigureStore({
+    reducer,
+    preloadedState,
+  })
 
   store.subscribe(() => {
     const state = store.getState();
