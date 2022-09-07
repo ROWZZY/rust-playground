@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import MenuGroup from './MenuGroup';
 import SelectOne from './SelectOne';
 
-import * as actions from './actions';
+import * as actions from './reducers/configuration';
 import * as selectors from './selectors';
 import State from './state';
 import { Channel } from './types';

@@ -1,4 +1,5 @@
-import { Action, ActionType } from '../actions';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import {
   AssemblyFlavor,
   Backtrace,
@@ -35,7 +36,7 @@ export interface State {
   backtrace: Backtrace;
 }
 
-const DEFAULT: State = {
+const initialState: State = {
   editor: Editor.Ace,
   ace: {
     keybinding: 'ace',
@@ -56,48 +57,83 @@ const DEFAULT: State = {
   backtrace: Backtrace.Disabled,
 };
 
-export default function configuration(state = DEFAULT, action: Action): State {
-  switch (action.type) {
-    case ActionType.ChangeEditor:
-      return { ...state, editor: action.editor };
-    case ActionType.ChangeKeybinding: {
-      const { ace } = state;
+const slice = createSlice({
+  name: 'configuration',
+  initialState,
+  reducers: {
+    changeEditor: (state, action: PayloadAction<Editor>) => {
+      state.editor = action.payload;
+    },
 
-      return { ...state, ace: { ...ace, keybinding: action.keybinding } };
-    }
-    case ActionType.ChangeAceTheme: {
-      const { ace } = state;
-      return { ...state, ace: { ...ace, theme: action.theme } };
-    }
-    case ActionType.ChangePairCharacters: {
-      const { ace } = state;
-      return { ...state, ace: { ...ace, pairCharacters: action.pairCharacters } };
-    }
-    case ActionType.ChangeMonacoTheme: {
-      const { monaco } = state;
-      return { ...state, monaco: { ...monaco, theme: action.theme } };
-    }
-    case ActionType.ChangeOrientation:
-      return { ...state, orientation: action.orientation };
-    case ActionType.ChangeAssemblyFlavor:
-      return { ...state, assemblyFlavor: action.assemblyFlavor };
-    case ActionType.ChangeDemangleAssembly:
-      return { ...state, demangleAssembly: action.demangleAssembly };
-    case ActionType.ChangeProcessAssembly:
-      return { ...state, processAssembly: action.processAssembly };
-    case ActionType.ChangePrimaryAction:
-      return { ...state, primaryAction: action.primaryAction };
-    case ActionType.ChangeChannel: {
-      return { ...state, channel: action.channel };
-    }
-    case ActionType.ChangeMode:
-      return { ...state, mode: action.mode };
-    case ActionType.ChangeEdition: {
-      return { ...state, edition: action.edition };
-    }
-    case ActionType.ChangeBacktrace:
-      return { ...state, backtrace: action.backtrace };
-    default:
-      return state;
-  }
-}
+    changeKeybinding: (state, action: PayloadAction<string>) => {
+      state.ace.keybinding = action.payload;
+    },
+
+    changeAceTheme: (state, action: PayloadAction<string>) => {
+      state.ace.theme = action.payload;
+    },
+
+    changePairCharacters: (state, action: PayloadAction<PairCharacters>) => {
+      state.ace.pairCharacters = action.payload;
+    },
+
+    changeMonacoTheme: (state, action: PayloadAction<string>) => {
+      state.monaco.theme = action.payload;
+    },
+
+    changeOrientation: (state, action: PayloadAction<Orientation>) => {
+      state.orientation = action.payload;
+    },
+
+    changeAssemblyFlavor: (state, action: PayloadAction<AssemblyFlavor>) => {
+      state.assemblyFlavor = action.payload;
+    },
+
+    changeDemangleAssembly: (state, action: PayloadAction<DemangleAssembly>) => {
+      state.demangleAssembly = action.payload;
+    },
+
+    changeProcessAssembly: (state, action: PayloadAction<ProcessAssembly>) => {
+      state.processAssembly = action.payload;
+    },
+
+    changePrimaryAction: (state, action: PayloadAction<PrimaryAction>) => {
+      state.primaryAction = action.payload;
+    },
+
+    changeChannel: (state, action: PayloadAction<Channel>) => {
+      state.channel = action.payload;
+    },
+
+    changeMode: (state, action: PayloadAction<Mode>) => {
+      state.mode = action.payload;
+    },
+
+    changeEdition: (state, action: PayloadAction<Edition>) => {
+      state.edition = action.payload;
+    },
+
+    changeBacktrace: (state, action: PayloadAction<Backtrace>) => {
+      state.backtrace = action.payload;
+    },
+  },
+});
+
+export const {
+  changeEditor,
+  changeKeybinding,
+  changeAceTheme,
+  changePairCharacters,
+  changeMonacoTheme,
+  changeOrientation,
+  changeAssemblyFlavor,
+  changeDemangleAssembly,
+  changeProcessAssembly,
+  changePrimaryAction,
+  changeChannel,
+  changeMode,
+  changeEdition,
+  changeBacktrace,
+} = slice.actions;
+
+export default slice.reducer;

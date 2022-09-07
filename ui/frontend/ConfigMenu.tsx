@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Either as EitherConfig, Select as SelectConfig } from './ConfigElement';
 import MenuGroup from './MenuGroup';
 
-import * as actions from './actions';
+import * as actions from './reducers/configuration';
 import State from './state';
 import {
   AssemblyFlavor,

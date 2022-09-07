@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import * as actions from './actions';
 import { Either as EitherConfig, Select as SelectConfig } from './ConfigElement';
 import MenuGroup from './MenuGroup';
 import { State } from './reducers';
+import * as actions from './reducers/configuration';
 import * as selectors from './selectors';
 import { Backtrace, Edition } from './types';
 
