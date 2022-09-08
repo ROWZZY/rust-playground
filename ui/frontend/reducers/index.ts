@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 
+import api from './api';
 import browser from './browser';
 import code from './code';
 import configuration from './configuration';
-import crates from './crates';
 import globalConfiguration from './globalConfiguration';
 import notifications from './notifications';
 import output from './output';
@@ -13,10 +13,10 @@ import selection from './selection';
 import versions from './versions';
 
 const playgroundApp = combineReducers({
+  [api.reducerPath]: api.reducer,
   browser,
   code,
   configuration,
-  crates,
   globalConfiguration,
   notifications,
   output,

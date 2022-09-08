@@ -14,7 +14,6 @@ import {
   gotoPosition,
   selectText,
   addImport,
-  performCratesLoad,
   performVersionsLoad,
   reExecuteWithBacktrace,
   browserWidthChanged,
@@ -22,6 +21,7 @@ import {
 import { configureRustErrors } from './highlighting';
 import PageSwitcher from './PageSwitcher';
 import playgroundApp from './reducers';
+import api from './reducers/api';
 import Router from './Router';
 import configureStore from './configureStore';
 
@@ -42,7 +42,7 @@ configureRustErrors({
   getChannel: () => store.getState().configuration.channel,
 });
 
-store.dispatch(performCratesLoad());
+store.dispatch(api.util.prefetch('crates', undefined, {}));
 store.dispatch(performVersionsLoad());
 
 window.rustPlayground = {

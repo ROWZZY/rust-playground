@@ -8,6 +8,7 @@ import AceEditor from './AceEditor';
 import MonacoEditor from './MonacoEditor';
 import { CommonEditorProps, Editor as EditorType, Position, Selection } from '../types';
 import { State } from '../reducers';
+import { useCratesQuery } from '../reducers/api';
 
 import styles from './Editor.module.css';
 
@@ -121,7 +122,7 @@ const Editor: React.FC = () => {
   const editor = useSelector((state: State) => state.configuration.editor);
   const position = useSelector((state: State) => state.position);
   const selection = useSelector((state: State) => state.selection);
-  const crates = useSelector((state: State) => state.crates);
+  const { data: crates = [] } = useCratesQuery();
 
   const dispatch = useAppDispatch();
   const execute = useCallback(() => dispatch(actions.performPrimaryAction()), [dispatch]);

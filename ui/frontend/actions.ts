@@ -32,7 +32,6 @@ import {
   Position,
   makePosition,
   Version,
-  Crate,
 } from './types';
 
 const routes = {
@@ -43,7 +42,6 @@ const routes = {
   miri: { pathname: '/miri' },
   macroExpansion: { pathname: '/macro-expansion' },
   meta: {
-    crates: { pathname: '/meta/crates' },
     version: {
       stable: '/meta/version/stable',
       beta: '/meta/version/beta',
@@ -108,8 +106,6 @@ export enum ActionType {
   RequestGistSave = 'REQUEST_GIST_SAVE',
   GistSaveSucceeded = 'GIST_SAVE_SUCCEEDED',
   GistSaveFailed = 'GIST_SAVE_FAILED',
-  RequestCratesLoad = 'REQUEST_CRATES_LOAD',
-  CratesLoadSucceeded = 'CRATES_LOAD_SUCCEEDED',
   RequestVersionsLoad = 'REQUEST_VERSIONS_LOAD',
   VersionsLoadSucceeded = 'VERSIONS_LOAD_SUCCEEDED',
   NotificationSeen = 'NOTIFICATION_SEEN',
@@ -658,22 +654,6 @@ export function performGistSave(): ThunkAction {
   };
 }
 
-const requestCratesLoad = () =>
-  createAction(ActionType.RequestCratesLoad);
-
-const receiveCratesLoadSuccess = ({ crates }: { crates: Crate[] }) =>
-  createAction(ActionType.CratesLoadSucceeded, { crates });
-
-export function performCratesLoad(): ThunkAction {
-  return function(dispatch) {
-    dispatch(requestCratesLoad());
-
-    return jsonGet(routes.meta.crates)
-      .then(json => dispatch(receiveCratesLoadSuccess(json)));
-    // TODO: Failure case
-  };
-}
-
 const requestVersionsLoad = () =>
   createAction(ActionType.RequestVersionsLoad);
 
@@ -852,8 +832,6 @@ export type Action =
   | ReturnType<typeof requestGistSave>
   | ReturnType<typeof receiveGistSaveSuccess>
   | ReturnType<typeof receiveGistSaveFailure>
-  | ReturnType<typeof requestCratesLoad>
-  | ReturnType<typeof receiveCratesLoadSuccess>
   | ReturnType<typeof requestVersionsLoad>
   | ReturnType<typeof receiveVersionsLoadSuccess>
   | ReturnType<typeof notificationSeen>
