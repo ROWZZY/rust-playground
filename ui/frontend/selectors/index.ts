@@ -2,7 +2,7 @@ import { source } from 'common-tags';
 import { createSelector } from 'reselect';
 import * as url from 'url';
 
-import { selectFormat, selectClippy, selectMiri } from '../reducers/api';
+import { selectFormat, selectClippy, selectMiri, selectMacroExpansion } from '../reducers/api';
 import { State } from '../reducers';
 import {
   AceResizeKey,
@@ -126,7 +126,6 @@ const getOutputs = (state: State) => [
   state.output.llvmIr,
   state.output.mir,
   state.output.hir,
-  state.output.macroExpansion,
   state.output.wasm,
 ];
 
@@ -135,6 +134,7 @@ export const getSomethingToShow = createSelector(
   selectFormat,
   selectClippy,
   selectMiri,
+  selectMacroExpansion,
   (outs, ...newOuts) => outs.some(hasProperties) || newOuts.some(o => !o.isUninitialized),
 );
 

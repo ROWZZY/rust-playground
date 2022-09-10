@@ -35,7 +35,6 @@ import {
 export const routes = {
   compile: { pathname: '/compile' },
   execute: { pathname: '/execute' },
-  macroExpansion: { pathname: '/macro-expansion' },
   meta: {
     version: {
       stable: '/meta/version/stable',
@@ -83,9 +82,6 @@ export enum ActionType {
   EnableFeatureGate = 'ENABLE_FEATURE_GATE',
   GotoPosition = 'GOTO_POSITION',
   SelectText = 'SELECT_TEXT',
-  RequestMacroExpansion = 'REQUEST_MACRO_EXPANSION',
-  MacroExpansionSucceeded = 'MACRO_EXPANSION_SUCCEEDED',
-  MacroExpansionFailed = 'MACRO_EXPANSION_FAILED',
   RequestGistLoad = 'REQUEST_GIST_LOAD',
   GistLoadSucceeded = 'GIST_LOAD_SUCCEEDED',
   GistLoadFailed = 'GIST_LOAD_FAILED',
@@ -412,49 +408,6 @@ export const gotoPosition = (line: string | number, column: string | number) =>
 export const selectText = (start: Position, end: Position) =>
   createAction(ActionType.SelectText, { start, end });
 
-interface GeneralSuccess {
-  stdout: string;
-  stderr: string;
-}
-
-const requestMacroExpansion = () =>
-  createAction(ActionType.RequestMacroExpansion);
-
-interface MacroExpansionRequestBody {
-  code: string;
-  edition: string;
-}
-
-interface MacroExpansionResponseBody {
-  success: boolean;
-  stdout: string;
-  stderr: string;
-}
-
-type MacroExpansionSuccess = GeneralSuccess;
-
-const receiveMacroExpansionSuccess = ({ stdout, stderr }: MacroExpansionSuccess) =>
-  createAction(ActionType.MacroExpansionSucceeded, { stdout, stderr });
-
-const receiveMacroExpansionFailure = ({ error }: CompileFailure) =>
-  createAction(ActionType.MacroExpansionFailed, { error });
-
-export function performMacroExpansion(): ThunkAction {
-  // TODO: Check a cache
-  return function(dispatch, getState) {
-    dispatch(requestMacroExpansion());
-
-    const { code, configuration: {
-      edition,
-    } } = getState();
-    const body: MacroExpansionRequestBody = { code, edition };
-
-    return jsonPost<MacroExpansionResponseBody>(routes.macroExpansion, body)
-      .then(json => dispatch(receiveMacroExpansionSuccess(json)))
-      .catch(json => dispatch(receiveMacroExpansionFailure(json)));
-  };
-}
-
 interface GistSuccessProps {
   id: string;
   url: string;
@@ -686,9 +639,6 @@ export type Action =
   | ReturnType<typeof enableFeatureGate>
   | ReturnType<typeof gotoPosition>
   | ReturnType<typeof selectText>
-  | ReturnType<typeof requestMacroExpansion>
-  | ReturnType<typeof receiveMacroExpansionSuccess>
-  | ReturnType<typeof receiveMacroExpansionFailure>
   | ReturnType<typeof requestGistLoad>
   | ReturnType<typeof receiveGistLoadSuccess>
   | ReturnType<typeof receiveGistLoadFailure>

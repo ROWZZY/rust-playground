@@ -15,9 +15,6 @@ export default function meta(state = DEFAULT, action: Action) {
     case ActionType.ChangeFocus:
       return { ...state, focus: action.focus };
 
-    case ActionType.RequestMacroExpansion:
-      return { ...state, focus: Focus.MacroExpansion };
-
     case ActionType.CompileLlvmIrRequest:
       return { ...state, focus: Focus.LlvmIr };
 
@@ -49,6 +46,8 @@ export default function meta(state = DEFAULT, action: Action) {
         return { ...state, focus: Focus.Clippy };
       } else if (api.endpoints.miri.matchPending(action)) {
         return { ...state, focus: Focus.Miri };
+      } else if (api.endpoints.macroExpansion.matchPending(action)) {
+        return { ...state, focus: Focus.MacroExpansion };
       } else {
         return state;
       }

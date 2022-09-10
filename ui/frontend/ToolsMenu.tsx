@@ -5,10 +5,8 @@ import ButtonMenuItem from './ButtonMenuItem';
 import MenuGroup from './MenuGroup';
 import MenuAside from './MenuAside';
 
-import { usePerformFormat, usePerformClippy, usePerformMiri } from './reducers/api';
+import { usePerformFormat, usePerformClippy, usePerformMiri, usePerformMacroExpansion } from './reducers/api';
 import * as selectors from './selectors';
-import * as actions from './actions';
-import { useAppDispatch } from './configureStore';
 
 interface ToolsMenuProps {
   close: () => void;
@@ -24,10 +22,10 @@ const ToolsMenu: React.FC<ToolsMenuProps> = props => {
   const nightlyVersion = useSelector(selectors.selectNightlyVersionText);
   const nightlyVersionDetails = useSelector(selectors.selectNightlyVersionDetailsText);
 
-  const dispatch = useAppDispatch();
   const performFormat = usePerformFormat();
   const performClippy = usePerformClippy();
   const performMiri = usePerformMiri();
+  const performMacroExpansion = usePerformMacroExpansion();
 
   const clippy = useCallback(() => {
     performClippy();
@@ -42,9 +40,9 @@ const ToolsMenu: React.FC<ToolsMenuProps> = props => {
     props.close();
   }, [performFormat, props]);
   const expandMacros = useCallback(() => {
-    dispatch(actions.performMacroExpansion());
+    performMacroExpansion();
     props.close();
-  }, [dispatch, props]);
+  }, [performMacroExpansion, props]);
 
   return (
     <MenuGroup title="Tools">

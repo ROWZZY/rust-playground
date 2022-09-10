@@ -46,6 +46,17 @@ interface MiriResponseBody {
   stderr: string;
 }
 
+interface MacroExpansionRequestBody {
+  code: string;
+  edition: string;
+}
+
+interface MacroExpansionResponseBody {
+  success: boolean;
+  stdout: string;
+  stderr: string;
+}
+
 const api = createApi({
   reducerPath: 'playgroundApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/' }),
@@ -69,6 +80,14 @@ const api = createApi({
     miri: builder.mutation<MiriResponseBody, MiriRequestBody>({
       query: (body) => ({
         url: '/miri',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    macroExpansion: builder.mutation<MacroExpansionResponseBody, MacroExpansionRequestBody>({
+      query: (body) => ({
+        url: '/macro-expansion',
         method: 'POST',
         body,
       }),
@@ -167,6 +186,20 @@ export const {
   selectCompat: selectMiriCompat,
   usePerform: usePerformMiri,
 } = createSingletonMutation('miri', api.endpoints.miri, selectMiriRequest);
+
+// ----------
+
+const selectMacroExpansionRequest = createSelector(
+  selectCode,
+  selectEdition,
+  (code, edition) => ({ code, edition }),
+);
+
+export const {
+  select: selectMacroExpansion,
+  selectCompat: selectMacroExpansionCompat,
+  usePerform: usePerformMacroExpansion,
+} = createSingletonMutation('macro expansion', api.endpoints.macroExpansion, selectMacroExpansionRequest);
 
 // ----------
 
