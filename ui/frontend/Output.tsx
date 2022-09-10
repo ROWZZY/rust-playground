@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import * as actions from './actions';
 import { State } from './reducers';
-import { selectClippyCompat, selectFormatCompat } from './reducers/api';
+import { selectClippyCompat, selectFormatCompat, selectMiriCompat } from './reducers/api';
 import { Focus } from './types';
 
 import Execute from './Output/Execute';
@@ -48,10 +48,11 @@ interface PaneWithCodeProps extends SimplePaneProps {
 
 const Output: React.FC = () => {
   const somethingToShow = useSelector(selectors.getSomethingToShow);
-  const { meta: { focus }, execute, miri, macroExpansion, assembly, llvmIr, mir, hir, wasm, gist } =
+  const { meta: { focus }, execute, macroExpansion, assembly, llvmIr, mir, hir, wasm, gist } =
     useSelector((state: State) => state.output);
   const format = useSelector(selectFormatCompat);
   const clippy = useSelector(selectClippyCompat);
+  const miri = useSelector(selectMiriCompat);
 
   const dispatch = useDispatch();
   const focusClose = useCallback(() => dispatch(actions.changeFocus()), [dispatch]);

@@ -8,12 +8,10 @@ import llvmIr from './llvmIr';
 import macroExpansion from './macroExpansion';
 import meta from './meta';
 import mir from './mir';
-import miri from './miri';
 import wasm from './wasm';
 
 const output = combineReducers({
   meta,
-  miri,
   macroExpansion,
   assembly,
   llvmIr,

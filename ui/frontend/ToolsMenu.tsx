@@ -5,7 +5,7 @@ import ButtonMenuItem from './ButtonMenuItem';
 import MenuGroup from './MenuGroup';
 import MenuAside from './MenuAside';
 
-import { usePerformFormat, usePerformClippy } from './reducers/api';
+import { usePerformFormat, usePerformClippy, usePerformMiri } from './reducers/api';
 import * as selectors from './selectors';
 import * as actions from './actions';
 import { useAppDispatch } from './configureStore';
@@ -27,15 +27,16 @@ const ToolsMenu: React.FC<ToolsMenuProps> = props => {
   const dispatch = useAppDispatch();
   const performFormat = usePerformFormat();
   const performClippy = usePerformClippy();
+  const performMiri = usePerformMiri();
 
   const clippy = useCallback(() => {
     performClippy();
     props.close();
   }, [performClippy, props]);
   const miri = useCallback(() => {
-    dispatch(actions.performMiri());
+    performMiri();
     props.close();
-  }, [dispatch, props]);
+  }, [performMiri, props]);
   const format = useCallback(() => {
     performFormat();
     props.close();

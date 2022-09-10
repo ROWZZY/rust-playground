@@ -35,6 +35,17 @@ interface ClippyResponseBody {
   stderr: string;
 }
 
+interface MiriRequestBody {
+  code: string;
+  edition: string;
+}
+
+interface MiriResponseBody {
+  success: boolean;
+  stdout: string;
+  stderr: string;
+}
+
 const api = createApi({
   reducerPath: 'playgroundApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/' }),
@@ -50,6 +61,14 @@ const api = createApi({
     clippy: builder.mutation<ClippyResponseBody, ClippyRequestBody>({
       query: (body) => ({
         url: '/clippy',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    miri: builder.mutation<MiriResponseBody, MiriRequestBody>({
+      query: (body) => ({
+        url: '/miri',
         method: 'POST',
         body,
       }),
@@ -134,6 +153,20 @@ export const {
   selectCompat: selectClippyCompat,
   usePerform: usePerformClippy,
 } = createSingletonMutation('clippy', api.endpoints.clippy, selectClippyRequest);
+
+// ----------
+
+const selectMiriRequest = createSelector(
+  selectCode,
+  selectEdition,
+  (code, edition) => ({ code, edition }),
+);
+
+export const {
+  select: selectMiri,
+  selectCompat: selectMiriCompat,
+  usePerform: usePerformMiri,
+} = createSingletonMutation('miri', api.endpoints.miri, selectMiriRequest);
 
 // ----------
 
