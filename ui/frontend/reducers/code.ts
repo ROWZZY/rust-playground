@@ -1,4 +1,5 @@
 import { Action, ActionType } from '../actions';
+import api from './api';
 
 const DEFAULT: State = `fn main() {
     println!("Hello, world!");
@@ -25,10 +26,11 @@ export default function code(state = DEFAULT, action: Action): State {
     case ActionType.EnableFeatureGate:
       return `#![feature(${action.featureGate})]\n${state}`;
 
-    case ActionType.FormatSucceeded:
-      return action.code;
-
     default:
-      return state;
+      if (api.endpoints.format.matchFulfilled(action)) {
+        return action.payload.code;
+      } else {
+        return state;
+      }
   }
 }

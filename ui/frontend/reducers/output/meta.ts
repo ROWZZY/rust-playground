@@ -1,6 +1,8 @@
 import { Action, ActionType } from '../../actions';
 import { Focus } from '../../types';
 
+import api from '../api';
+
 const DEFAULT: State = {
 };
 
@@ -40,16 +42,17 @@ export default function meta(state = DEFAULT, action: Action) {
     case ActionType.ExecuteRequest:
       return { ...state, focus: Focus.Execute };
 
-    case ActionType.RequestFormat:
-      return { ...state, focus: Focus.Format };
-    case ActionType.FormatSucceeded:
-      return { ...state, focus: undefined };
-
     case ActionType.RequestGistLoad:
     case ActionType.RequestGistSave:
       return { ...state, focus: Focus.Gist };
 
     default:
-      return state;
+      if (api.endpoints.format.matchPending(action)) {
+        return { ...state, focus: Focus.Format };
+      } else if (api.endpoints.format.matchFulfilled(action)) {
+        return { ...state, focus: undefined };
+      } else {
+        return state;
+      }
   }
 }

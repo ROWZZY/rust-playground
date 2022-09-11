@@ -2,6 +2,7 @@ import { source } from 'common-tags';
 import { createSelector } from 'reselect';
 import * as url from 'url';
 
+import { selectFormat } from '../reducers/api';
 import { State } from '../reducers';
 import {
   AceResizeKey,
@@ -14,7 +15,7 @@ import {
   Version,
 } from '../types';
 
-const selectCode = (state: State) => state.code;
+import { selectCode, selectEdition } from './shared';
 
 const HAS_TESTS_RE = /^\s*#\s*\[\s*test\s*([^"]*)]/m;
 const selectHasTests = createSelector(selectCode, code => !!code.match(HAS_TESTS_RE));
@@ -120,8 +121,6 @@ export const selectClippyVersionDetailsText = createSelector(selectClippyVersion
 export const selectRustfmtVersionDetailsText = createSelector(selectRustfmtVersion, versionDetails);
 export const selectMiriVersionDetailsText = createSelector(selectMiriVersion, versionDetails);
 
-const selectEdition = (state: State) => state.configuration.edition;
-
 export const isNightlyChannel = (state: State) => (
   state.configuration.channel === Channel.Nightly
 );
@@ -161,7 +160,6 @@ const getOutputs = (state: State) => [
   state.output.assembly,
   state.output.clippy,
   state.output.execute,
-  state.output.format,
   state.output.gist,
   state.output.llvmIr,
   state.output.mir,
@@ -173,7 +171,8 @@ const getOutputs = (state: State) => [
 
 export const getSomethingToShow = createSelector(
   getOutputs,
-  a => a.some(hasProperties),
+  selectFormat,
+  (outs, format) => outs.some(hasProperties) || !format.isUninitialized,
 );
 
 const baseUrlSelector = (state: State) =>
@@ -313,12 +312,6 @@ export const clippyRequestSelector = createSelector(
   selectEdition,
   selectCrateType,
   (code, edition, crateType) => ({ code, edition, crateType }),
-);
-
-export const formatRequestSelector = createSelector(
-  selectCode,
-  selectEdition,
-  (code, edition) => ({ code, edition }),
 );
 
 const focus = (state: State) => state.output.meta.focus;

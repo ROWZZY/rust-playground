@@ -5,6 +5,7 @@ import ButtonMenuItem from './ButtonMenuItem';
 import MenuGroup from './MenuGroup';
 import MenuAside from './MenuAside';
 
+import { usePerformFormat } from './reducers/api';
 import * as selectors from './selectors';
 import * as actions from './actions';
 import { useAppDispatch } from './configureStore';
@@ -24,6 +25,8 @@ const ToolsMenu: React.FC<ToolsMenuProps> = props => {
   const nightlyVersionDetails = useSelector(selectors.selectNightlyVersionDetailsText);
 
   const dispatch = useAppDispatch();
+  const performFormat = usePerformFormat();
+
   const clippy = useCallback(() => {
     dispatch(actions.performClippy());
     props.close();
@@ -33,9 +36,9 @@ const ToolsMenu: React.FC<ToolsMenuProps> = props => {
     props.close();
   }, [dispatch, props]);
   const format = useCallback(() => {
-    dispatch(actions.performFormat());
+    performFormat();
     props.close();
-  }, [dispatch, props]);
+  }, [performFormat, props]);
   const expandMacros = useCallback(() => {
     dispatch(actions.performMacroExpansion());
     props.close();
