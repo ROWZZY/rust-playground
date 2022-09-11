@@ -14,7 +14,6 @@ import {
   gotoPosition,
   selectText,
   addImport,
-  performVersionsLoad,
   reExecuteWithBacktrace,
   browserWidthChanged,
 } from './actions';
@@ -43,7 +42,7 @@ configureRustErrors({
 });
 
 store.dispatch(api.util.prefetch('crates', undefined, {}));
-store.dispatch(performVersionsLoad());
+store.dispatch(api.util.prefetch('versions', undefined, {}));
 
 window.rustPlayground = {
   setCode: code => {

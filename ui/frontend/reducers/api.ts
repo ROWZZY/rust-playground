@@ -8,7 +8,7 @@ import { sortBy } from 'lodash';
 import { useSelector } from 'react-redux';
 
 import RootState from '../state';
-import { Crate } from '../types';
+import { Crate, Version } from '../types';
 import { selectCode, selectEdition, selectCrateType } from '../selectors/shared';
 
 interface FormatRequestBody {
@@ -96,6 +96,34 @@ const api = createApi({
     crates: builder.query<Crate[], void>({
       query: () => '/meta/crates',
       transformResponse: (response: { crates: Crate[] }) => sortBy(response.crates, c => c.name),
+    }),
+
+    versions: builder.query({
+      queryFn: async (_arg, _queryApi, _extraOptions, baseQuery) => {
+        const requests = Promise.all([
+          baseQuery('/meta/version/stable'),
+          baseQuery('/meta/version/beta'),
+          baseQuery('/meta/version/nightly'),
+          baseQuery('/meta/version/rustfmt'),
+          baseQuery('/meta/version/clippy'),
+          baseQuery('/meta/version/miri'),
+        ]);
+
+        const responses = await requests;
+        const successes = [];
+
+        for (let i = 0; i < responses.length; i++) {
+          const { data, error } = responses[i];
+
+          if (error) {
+            return { error };
+          }
+          successes.push(data as Version);
+        }
+
+        const [stable, beta, nightly, rustfmt, clippy, miri] = successes;
+        return { data: { stable, beta, nightly, rustfmt, clippy, miri } };
+      },
     }),
   }),
 });
@@ -203,6 +231,6 @@ export const {
 
 // ----------
 
-export const { useCratesQuery } = api;
+export const { useCratesQuery, useVersionsQuery } = api;
 
 export default api;

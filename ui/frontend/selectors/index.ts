@@ -2,7 +2,7 @@ import { source } from 'common-tags';
 import { createSelector } from 'reselect';
 import * as url from 'url';
 
-import { selectFormat, selectClippy, selectMiri, selectMacroExpansion } from '../reducers/api';
+import api, { selectFormat, selectClippy, selectMiri, selectMacroExpansion } from '../reducers/api';
 import { State } from '../reducers';
 import {
   AceResizeKey,
@@ -62,12 +62,14 @@ const LABELS: { [index in PrimaryActionCore]: string } = {
 
 export const getExecutionLabel = createSelector(primaryActionSelector, primaryAction => LABELS[primaryAction]);
 
-const selectStableVersion = (state: State) => state.versions?.stable;
-const selectBetaVersion = (state: State) => state.versions?.beta;
-const selectNightlyVersion = (state: State) => state.versions?.nightly;
-const selectRustfmtVersion = (state: State) => state.versions?.rustfmt;
-const selectClippyVersion = (state: State) => state.versions?.clippy;
-const selectMiriVersion = (state: State) => state.versions?.miri;
+const selectAllVersions = api.endpoints.versions.select(undefined);
+
+const selectStableVersion = createSelector(selectAllVersions, (v) => v.data?.stable);
+const selectBetaVersion = createSelector(selectAllVersions, (v) => v.data?.beta);
+const selectNightlyVersion = createSelector(selectAllVersions, (v) => v.data?.nightly);
+const selectRustfmtVersion = createSelector(selectAllVersions, (v) => v.data?.rustfmt);
+const selectClippyVersion = createSelector(selectAllVersions, (v) => v.data?.clippy);
+const selectMiriVersion = createSelector(selectAllVersions, (v) => v.data?.miri);
 
 const versionNumber = (v: Version | undefined) => v ? v.version : '';
 export const selectStableVersionText = createSelector(selectStableVersion, versionNumber);

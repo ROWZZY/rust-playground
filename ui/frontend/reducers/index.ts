@@ -10,7 +10,6 @@ import output from './output';
 import page from './page';
 import position from './position';
 import selection from './selection';
-import versions from './versions';
 
 const playgroundApp = combineReducers({
   [api.reducerPath]: api.reducer,
@@ -23,7 +22,6 @@ const playgroundApp = combineReducers({
   page,
   position,
   selection,
-  versions,
 });
 
 export type State = ReturnType<typeof playgroundApp>;
