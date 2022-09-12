@@ -2,7 +2,7 @@ import { source } from 'common-tags';
 import { createSelector } from 'reselect';
 import * as url from 'url';
 
-import { selectFormat } from '../reducers/api';
+import { selectFormat, selectClippy } from '../reducers/api';
 import { State } from '../reducers';
 import {
   AceResizeKey,
@@ -15,57 +15,20 @@ import {
   Version,
 } from '../types';
 
-import { selectCode, selectEdition } from './shared';
-
-const HAS_TESTS_RE = /^\s*#\s*\[\s*test\s*([^"]*)]/m;
-const selectHasTests = createSelector(selectCode, code => !!code.match(HAS_TESTS_RE));
-
-const HAS_MAIN_FUNCTION_RE = /^\s*(pub\s+)?\s*(const\s+)?\s*(async\s+)?\s*fn\s+main\s*\(\s*\)/m;
-export const selectHasMainFunction = createSelector(selectCode, code => !!code.match(HAS_MAIN_FUNCTION_RE));
-
-const CRATE_TYPE_RE = /^\s*#!\s*\[\s*crate_type\s*=\s*"([^"]*)"\s*]/m;
-const selectUserCrateType = createSelector(selectCode, code => (code.match(CRATE_TYPE_RE) || [])[1]);
-
-const selectAutoPrimaryAction = createSelector(
-  selectUserCrateType,
-  selectHasTests,
+import * as shared from './shared';
+const {
+  selectAutoPrimaryAction,
+  selectCode,
+  selectEdition,
+} = shared;
+export const {
+  selectCrateType,
   selectHasMainFunction,
-  (crateType, hasTests, hasMainFunction) => {
-    if (crateType && crateType !== 'proc-macro') {
-      if (crateType === 'bin') {
-        return PrimaryActionCore.Execute;
-      } else {
-        return PrimaryActionCore.Compile;
-      }
-    } else {
-      if (hasTests) {
-        return PrimaryActionCore.Test;
-      } else if (hasMainFunction) {
-        return PrimaryActionCore.Execute;
-      } else {
-        return PrimaryActionCore.Compile;
-      }
-    }
-  },
-);
+} = shared;
 
 export const runAsTest = createSelector(
   selectAutoPrimaryAction,
   primaryAction => primaryAction === PrimaryActionCore.Test,
-);
-
-export const selectCrateType = createSelector(
-  selectUserCrateType,
-  selectAutoPrimaryAction,
-  (crateType, primaryAction) => {
-    if (crateType) {
-      return crateType;
-    } else if (primaryAction === PrimaryActionCore.Execute) {
-      return 'bin';
-    } else {
-      return 'lib';
-    }
-  },
 );
 
 const selectRawPrimaryAction = (state: State) => state.configuration.primaryAction;
@@ -158,7 +121,6 @@ export const hasProperties = (obj: {}) => Object.values(obj).some(val => !!val);
 
 const getOutputs = (state: State) => [
   state.output.assembly,
-  state.output.clippy,
   state.output.execute,
   state.output.gist,
   state.output.llvmIr,
@@ -172,7 +134,8 @@ const getOutputs = (state: State) => [
 export const getSomethingToShow = createSelector(
   getOutputs,
   selectFormat,
-  (outs, format) => outs.some(hasProperties) || !format.isUninitialized,
+  selectClippy,
+  (outs, format, clippy) => outs.some(hasProperties) || !format.isUninitialized || !clippy.isUninitialized,
 );
 
 const baseUrlSelector = (state: State) =>
@@ -306,13 +269,6 @@ export const selectExecuteRequest = createSelector(
   (_state: State, crateType: string, tests: boolean) => ({ crateType, tests }),
   (code, base, backtrace, { crateType, tests }) => ({ ...base, code, backtrace, crateType, tests }),
 )
-
-export const clippyRequestSelector = createSelector(
-  selectCode,
-  selectEdition,
-  selectCrateType,
-  (code, edition, crateType) => ({ code, edition, crateType }),
-);
 
 const focus = (state: State) => state.output.meta.focus;
 export const isOutputFocused = createSelector(

@@ -15,9 +15,6 @@ export default function meta(state = DEFAULT, action: Action) {
     case ActionType.ChangeFocus:
       return { ...state, focus: action.focus };
 
-    case ActionType.RequestClippy:
-      return { ...state, focus: Focus.Clippy };
-
     case ActionType.RequestMiri:
       return { ...state, focus: Focus.Miri };
 
@@ -51,6 +48,8 @@ export default function meta(state = DEFAULT, action: Action) {
         return { ...state, focus: Focus.Format };
       } else if (api.endpoints.format.matchFulfilled(action)) {
         return { ...state, focus: undefined };
+      } else if (api.endpoints.clippy.matchPending(action)) {
+        return { ...state, focus: Focus.Clippy };
       } else {
         return state;
       }

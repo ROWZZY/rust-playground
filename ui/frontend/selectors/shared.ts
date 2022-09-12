@@ -37,4 +37,18 @@ export const selectAutoPrimaryAction = createSelector(
   },
 );
 
+export const selectCrateType = createSelector(
+  selectUserCrateType,
+  selectAutoPrimaryAction,
+  (crateType, primaryAction) => {
+    if (crateType) {
+      return crateType;
+    } else if (primaryAction === PrimaryActionCore.Execute) {
+      return 'bin';
+    } else {
+      return 'lib';
+    }
+  },
+);
+
 export const selectEdition = (state: State) => state.configuration.edition;

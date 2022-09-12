@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 import RootState from '../state';
 import { Crate } from '../types';
-import { selectCode, selectEdition } from '../selectors/shared';
+import { selectCode, selectEdition, selectCrateType } from '../selectors/shared';
 
 interface FormatRequestBody {
   code: string;
@@ -23,6 +23,18 @@ interface FormatResponseBody {
   stderr: string;
 }
 
+interface ClippyRequestBody {
+  code: string;
+  edition: string;
+  crateType: string;
+}
+
+interface ClippyResponseBody {
+  success: boolean;
+  stdout: string;
+  stderr: string;
+}
+
 const api = createApi({
   reducerPath: 'playgroundApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/' }),
@@ -30,6 +42,14 @@ const api = createApi({
     format: builder.mutation<FormatResponseBody, FormatRequestBody>({
       query: (body) => ({
         url: '/format',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    clippy: builder.mutation<ClippyResponseBody, ClippyRequestBody>({
+      query: (body) => ({
+        url: '/clippy',
         method: 'POST',
         body,
       }),
@@ -99,6 +119,21 @@ export const {
   selectCompat: selectFormatCompat,
   usePerform: usePerformFormat,
 } = createSingletonMutation('format', api.endpoints.format, selectFormatRequest);
+
+// ----------
+
+const selectClippyRequest = createSelector(
+  selectCode,
+  selectEdition,
+  selectCrateType,
+  (code, edition, crateType) => ({ code, edition, crateType }),
+);
+
+export const {
+  select: selectClippy,
+  selectCompat: selectClippyCompat,
+  usePerform: usePerformClippy,
+} = createSingletonMutation('clippy', api.endpoints.clippy, selectClippyRequest);
 
 // ----------
 
