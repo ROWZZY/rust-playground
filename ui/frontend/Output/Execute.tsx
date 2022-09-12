@@ -12,7 +12,7 @@ import styles from './Execute.module.css';
 
 const Execute: React.FC = () => {
   const details = useSelector((state: State) => state.output.execute);
-  const isAutoBuild = useSelector(selectors.isAutoBuildSelector);
+  const isAutoBuild = useSelector(selectors.selectIsAutoBuild);
 
   const dispatch = useDispatch();
   const addMainFunction = useCallback(() => dispatch(actions.addMainFunction()), [dispatch]);

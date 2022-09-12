@@ -17,11 +17,11 @@ interface ChannelMenuProps {
 
 const ChannelMenu: React.FC<ChannelMenuProps> = props => {
   const channel = useSelector((state: State) => state.configuration.channel);
-  const stableVersion = useSelector(selectors.stableVersionText);
-  const betaVersion = useSelector(selectors.betaVersionText);
-  const nightlyVersion = useSelector(selectors.nightlyVersionText);
-  const betaVersionDetails = useSelector(selectors.betaVersionDetailsText);
-  const nightlyVersionDetails = useSelector(selectors.nightlyVersionDetailsText);
+  const stableVersion = useSelector(selectors.selectStableVersionText);
+  const betaVersion = useSelector(selectors.selectBetaVersionText);
+  const nightlyVersion = useSelector(selectors.selectNightlyVersionText);
+  const betaVersionDetails = useSelector(selectors.selectBetaVersionDetailsText);
+  const nightlyVersionDetails = useSelector(selectors.selectNightlyVersionDetailsText);
 
   const dispatch = useDispatch();
   const changeChannel = useCallback((channel) => {

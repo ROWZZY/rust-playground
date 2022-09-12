@@ -5,8 +5,8 @@ import url, { UrlObject } from 'url';
 import {
   clippyRequestSelector,
   formatRequestSelector,
-  getCrateType,
-  isAutoBuildSelector,
+  selectCrateType,
+  selectIsAutoBuild,
   runAsTest,
 } from './selectors';
 import State from './state';
@@ -286,7 +286,7 @@ const performCommonExecute = (crateType: string, tests: boolean): ThunkAction =>
   const state = getState();
   const { code, configuration: { channel, mode, edition } } = state;
   const backtrace = state.configuration.backtrace === Backtrace.Enabled;
-  const isAutoBuild = isAutoBuildSelector(state);
+  const isAutoBuild = selectIsAutoBuild(state);
 
   const body: ExecuteRequestBody = { channel, mode, edition, crateType, tests, code, backtrace };
 
@@ -298,7 +298,7 @@ const performCommonExecute = (crateType: string, tests: boolean): ThunkAction =>
 function performAutoOnly(): ThunkAction {
   return function(dispatch, getState) {
     const state = getState();
-    const crateType = getCrateType(state);
+    const crateType = selectCrateType(state);
     const tests = runAsTest(state);
 
     return dispatch(performCommonExecute(crateType, tests));
@@ -348,7 +348,7 @@ function performCompileShow(
       demangleAssembly,
       processAssembly,
     } } = state;
-    const crateType = getCrateType(state);
+    const crateType = selectCrateType(state);
     const tests = runAsTest(state);
     const backtrace = state.configuration.backtrace === Backtrace.Enabled;
     const body: CompileRequestBody = {

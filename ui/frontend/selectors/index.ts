@@ -14,21 +14,21 @@ import {
   Version,
 } from '../types';
 
-const codeSelector = (state: State) => state.code;
+const selectCode = (state: State) => state.code;
 
 const HAS_TESTS_RE = /^\s*#\s*\[\s*test\s*([^"]*)]/m;
-export const hasTestsSelector = createSelector(codeSelector, code => !!code.match(HAS_TESTS_RE));
+const selectHasTests = createSelector(selectCode, code => !!code.match(HAS_TESTS_RE));
 
 const HAS_MAIN_FUNCTION_RE = /^\s*(pub\s+)?\s*(const\s+)?\s*(async\s+)?\s*fn\s+main\s*\(\s*\)/m;
-export const hasMainFunctionSelector = createSelector(codeSelector, code => !!code.match(HAS_MAIN_FUNCTION_RE));
+export const selectHasMainFunction = createSelector(selectCode, code => !!code.match(HAS_MAIN_FUNCTION_RE));
 
 const CRATE_TYPE_RE = /^\s*#!\s*\[\s*crate_type\s*=\s*"([^"]*)"\s*]/m;
-export const crateTypeSelector = createSelector(codeSelector, code => (code.match(CRATE_TYPE_RE) || [])[1]);
+const selectUserCrateType = createSelector(selectCode, code => (code.match(CRATE_TYPE_RE) || [])[1]);
 
-const autoPrimaryActionSelector = createSelector(
-  crateTypeSelector,
-  hasTestsSelector,
-  hasMainFunctionSelector,
+const selectAutoPrimaryAction = createSelector(
+  selectUserCrateType,
+  selectHasTests,
+  selectHasMainFunction,
   (crateType, hasTests, hasMainFunction) => {
     if (crateType && crateType !== 'proc-macro') {
       if (crateType === 'bin') {
@@ -49,13 +49,13 @@ const autoPrimaryActionSelector = createSelector(
 );
 
 export const runAsTest = createSelector(
-  autoPrimaryActionSelector,
+  selectAutoPrimaryAction,
   primaryAction => primaryAction === PrimaryActionCore.Test,
 );
 
-export const getCrateType = createSelector(
-  crateTypeSelector,
-  autoPrimaryActionSelector,
+export const selectCrateType = createSelector(
+  selectUserCrateType,
+  selectAutoPrimaryAction,
   (crateType, primaryAction) => {
     if (crateType) {
       return crateType;
@@ -67,19 +67,19 @@ export const getCrateType = createSelector(
   },
 );
 
-const rawPrimaryActionSelector = (state: State) => state.configuration.primaryAction;
+const selectRawPrimaryAction = (state: State) => state.configuration.primaryAction;
 
-export const isAutoBuildSelector = createSelector(
-  rawPrimaryActionSelector,
-  autoPrimaryActionSelector,
+export const selectIsAutoBuild = createSelector(
+  selectRawPrimaryAction,
+  selectAutoPrimaryAction,
   (primaryAction, autoPrimaryAction) => (
     primaryAction === PrimaryActionAuto.Auto && autoPrimaryAction === PrimaryActionCore.Compile
   ),
 );
 
 const primaryActionSelector = createSelector(
-  rawPrimaryActionSelector,
-  autoPrimaryActionSelector,
+  selectRawPrimaryAction,
+  selectAutoPrimaryAction,
   (primaryAction, autoPrimaryAction): PrimaryActionCore => (
     primaryAction === PrimaryActionAuto.Auto ? autoPrimaryAction : primaryAction
   ),
@@ -98,29 +98,29 @@ const LABELS: { [index in PrimaryActionCore]: string } = {
 
 export const getExecutionLabel = createSelector(primaryActionSelector, primaryAction => LABELS[primaryAction]);
 
-const getStable = (state: State) => state.versions?.stable;
-const getBeta = (state: State) => state.versions?.beta;
-const getNightly = (state: State) => state.versions?.nightly;
-const getRustfmt = (state: State) => state.versions?.rustfmt;
-const getClippy = (state: State) => state.versions?.clippy;
-const getMiri = (state: State) => state.versions?.miri;
+const selectStableVersion = (state: State) => state.versions?.stable;
+const selectBetaVersion = (state: State) => state.versions?.beta;
+const selectNightlyVersion = (state: State) => state.versions?.nightly;
+const selectRustfmtVersion = (state: State) => state.versions?.rustfmt;
+const selectClippyVersion = (state: State) => state.versions?.clippy;
+const selectMiriVersion = (state: State) => state.versions?.miri;
 
 const versionNumber = (v: Version | undefined) => v ? v.version : '';
-export const stableVersionText = createSelector(getStable, versionNumber);
-export const betaVersionText = createSelector(getBeta, versionNumber);
-export const nightlyVersionText = createSelector(getNightly, versionNumber);
-export const clippyVersionText = createSelector(getClippy, versionNumber);
-export const rustfmtVersionText = createSelector(getRustfmt, versionNumber);
-export const miriVersionText = createSelector(getMiri, versionNumber);
+export const selectStableVersionText = createSelector(selectStableVersion, versionNumber);
+export const selectBetaVersionText = createSelector(selectBetaVersion, versionNumber);
+export const selectNightlyVersionText = createSelector(selectNightlyVersion, versionNumber);
+export const selectClippyVersionText = createSelector(selectClippyVersion, versionNumber);
+export const selectRustfmtVersionText = createSelector(selectRustfmtVersion, versionNumber);
+export const selectMiriVersionText = createSelector(selectMiriVersion, versionNumber);
 
 const versionDetails = (v: Version | undefined) => v ? `${v.date} ${v.hash.slice(0, 20)}` : '';
-export const betaVersionDetailsText = createSelector(getBeta, versionDetails);
-export const nightlyVersionDetailsText = createSelector(getNightly, versionDetails);
-export const clippyVersionDetailsText = createSelector(getClippy, versionDetails);
-export const rustfmtVersionDetailsText = createSelector(getRustfmt, versionDetails);
-export const miriVersionDetailsText = createSelector(getMiri, versionDetails);
+export const selectBetaVersionDetailsText = createSelector(selectBetaVersion, versionDetails);
+export const selectNightlyVersionDetailsText = createSelector(selectNightlyVersion, versionDetails);
+export const selectClippyVersionDetailsText = createSelector(selectClippyVersion, versionDetails);
+export const selectRustfmtVersionDetailsText = createSelector(selectRustfmtVersion, versionDetails);
+export const selectMiriVersionDetailsText = createSelector(selectMiriVersion, versionDetails);
 
-const editionSelector = (state: State) => state.configuration.edition;
+const selectEdition = (state: State) => state.configuration.edition;
 
 export const isNightlyChannel = (state: State) => (
   state.configuration.channel === Channel.Nightly
@@ -139,16 +139,16 @@ export const getChannelLabel = (state: State) => {
 };
 
 export const isEditionDefault = createSelector(
-  editionSelector,
+  selectEdition,
   edition => edition == Edition.Rust2021,
 );
 
-export const getBacktraceSet = (state: State) => (
+export const selectBacktraceEnabled = (state: State) => (
   state.configuration.backtrace !== Backtrace.Disabled
 );
 
 export const getAdvancedOptionsSet = createSelector(
-  isEditionDefault, getBacktraceSet,
+  isEditionDefault, selectBacktraceEnabled,
   (editionDefault, backtraceSet) => (
     !editionDefault || backtraceSet
   ),
@@ -284,15 +284,15 @@ export const anyNotificationsToShowSelector = createSelector(
 );
 
 export const clippyRequestSelector = createSelector(
-  codeSelector,
-  editionSelector,
-  getCrateType,
+  selectCode,
+  selectEdition,
+  selectCrateType,
   (code, edition, crateType) => ({ code, edition, crateType }),
 );
 
 export const formatRequestSelector = createSelector(
-  codeSelector,
-  editionSelector,
+  selectCode,
+  selectEdition,
   (code, edition) => ({ code, edition }),
 );
 
@@ -326,6 +326,6 @@ export const aceResizeKey = createSelector(
 )
 
 export const offerCrateAutocompleteOnUse = createSelector(
-  editionSelector,
+  selectEdition,
   (edition) => edition !== Edition.Rust2015,
 );

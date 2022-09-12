@@ -11,7 +11,7 @@ import { Backtrace, Edition } from './types';
 const AdvancedOptionsMenu: React.FC = () => {
   const isEditionDefault = useSelector(selectors.isEditionDefault);
   const edition = useSelector((state: State) => state.configuration.edition);
-  const isBacktraceSet = useSelector(selectors.getBacktraceSet);
+  const isBacktraceSet = useSelector(selectors.selectBacktraceEnabled);
   const backtrace = useSelector((state: State) => state.configuration.backtrace);
 
   const dispatch = useDispatch();

@@ -14,14 +14,14 @@ interface ToolsMenuProps {
 }
 
 const ToolsMenu: React.FC<ToolsMenuProps> = props => {
-  const rustfmtVersion = useSelector(selectors.rustfmtVersionText);
-  const rustfmtVersionDetails = useSelector(selectors.rustfmtVersionDetailsText);
-  const clippyVersionDetails = useSelector(selectors.clippyVersionDetailsText);
-  const clippyVersion = useSelector(selectors.clippyVersionText);
-  const miriVersionDetails = useSelector(selectors.miriVersionDetailsText);
-  const miriVersion = useSelector(selectors.miriVersionText);
-  const nightlyVersion = useSelector(selectors.nightlyVersionText);
-  const nightlyVersionDetails = useSelector(selectors.nightlyVersionDetailsText);
+  const rustfmtVersion = useSelector(selectors.selectRustfmtVersionText);
+  const rustfmtVersionDetails = useSelector(selectors.selectRustfmtVersionDetailsText);
+  const clippyVersionDetails = useSelector(selectors.selectClippyVersionDetailsText);
+  const clippyVersion = useSelector(selectors.selectClippyVersionText);
+  const miriVersionDetails = useSelector(selectors.selectMiriVersionDetailsText);
+  const miriVersion = useSelector(selectors.selectMiriVersionText);
+  const nightlyVersion = useSelector(selectors.selectNightlyVersionText);
+  const nightlyVersionDetails = useSelector(selectors.selectNightlyVersionDetailsText);
 
   const dispatch = useAppDispatch();
   const clippy = useCallback(() => {
