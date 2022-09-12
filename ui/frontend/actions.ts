@@ -8,6 +8,8 @@ import {
   selectCrateType,
   selectIsAutoBuild,
   runAsTest,
+  selectCompileRequest,
+  selectExecuteRequest,
 } from './selectors';
 import State from './state';
 import {
@@ -284,11 +286,9 @@ const performCommonExecute = (crateType: string, tests: boolean): ThunkAction =>
   dispatch(requestExecute());
 
   const state = getState();
-  const { code, configuration: { channel, mode, edition } } = state;
-  const backtrace = state.configuration.backtrace === Backtrace.Enabled;
   const isAutoBuild = selectIsAutoBuild(state);
 
-  const body: ExecuteRequestBody = { channel, mode, edition, crateType, tests, code, backtrace };
+  const body: ExecuteRequestBody = selectExecuteRequest(state, crateType, tests);
 
   return jsonPost<ExecuteResponseBody>(routes.execute, body)
     .then(json => dispatch(receiveExecuteSuccess({ ...json, isAutoBuild })))
@@ -340,30 +340,7 @@ function performCompileShow(
     dispatch(request());
 
     const state = getState();
-    const { code, configuration: {
-      channel,
-      mode,
-      edition,
-      assemblyFlavor,
-      demangleAssembly,
-      processAssembly,
-    } } = state;
-    const crateType = selectCrateType(state);
-    const tests = runAsTest(state);
-    const backtrace = state.configuration.backtrace === Backtrace.Enabled;
-    const body: CompileRequestBody = {
-      channel,
-      mode,
-      edition,
-      crateType,
-      tests,
-      code,
-      target,
-      assemblyFlavor,
-      demangleAssembly,
-      processAssembly,
-      backtrace,
-    };
+    const body: CompileRequestBody = selectCompileRequest(state, target);
 
     return jsonPost<CompileResponseBody>(routes.compile, body)
       .then(json => dispatch(success(json)))

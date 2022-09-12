@@ -143,8 +143,9 @@ export const isEditionDefault = createSelector(
   edition => edition == Edition.Rust2021,
 );
 
-export const selectBacktraceEnabled = (state: State) => (
-  state.configuration.backtrace !== Backtrace.Disabled
+export const selectBacktraceEnabled = createSelector(
+  (state: State) => state.configuration.backtrace,
+  (backtrace) => backtrace === Backtrace.Enabled,
 );
 
 export const getAdvancedOptionsSet = createSelector(
@@ -282,6 +283,30 @@ export const anyNotificationsToShowSelector = createSelector(
   showMonacoEditorAvailableSelector,
   (...allNotifications) => allNotifications.some(n => n),
 );
+
+export const selectCompileRequest = createSelector(
+  selectCode,
+  (state: State) => {
+    const { channel, mode, edition, assemblyFlavor, demangleAssembly, processAssembly } = state.configuration;
+    return { channel, mode, edition, assemblyFlavor, demangleAssembly, processAssembly };
+  },
+  selectBacktraceEnabled,
+  selectCrateType,
+  runAsTest,
+  (_state: State, target: string) => target,
+  (code, base, backtrace, crateType, tests, target) => ({ ...base, code, backtrace, crateType, tests, target }),
+);
+
+export const selectExecuteRequest = createSelector(
+  selectCode,
+  (state: State) => {
+    const { channel, mode, edition } = state.configuration;
+    return { channel, mode, edition };
+  },
+  selectBacktraceEnabled,
+  (_state: State, crateType: string, tests: boolean) => ({ crateType, tests }),
+  (code, base, backtrace, { crateType, tests }) => ({ ...base, code, backtrace, crateType, tests }),
+)
 
 export const clippyRequestSelector = createSelector(
   selectCode,
