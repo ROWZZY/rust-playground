@@ -6,7 +6,6 @@ import {
   clippyRequestSelector,
   formatRequestSelector,
   selectCrateType,
-  selectIsAutoBuild,
   runAsTest,
   selectCompileRequest,
   selectExecuteRequest,
@@ -194,22 +193,14 @@ interface ExecuteResponseBody {
   stderr: string;
 }
 
-interface ExecuteSuccess extends ExecuteResponseBody {
-  isAutoBuild: boolean;
-}
-
 const requestExecute = () =>
   createAction(ActionType.ExecuteRequest);
 
-const receiveExecuteSuccess = ({ stdout, stderr, isAutoBuild }: ExecuteSuccess) =>
-  createAction(ActionType.ExecuteSucceeded, { stdout, stderr, isAutoBuild });
+const receiveExecuteSuccess = ({ stdout, stderr }: ExecuteResponseBody) =>
+  createAction(ActionType.ExecuteSucceeded, { stdout, stderr });
 
-const receiveExecuteFailure = ({
-  error, isAutoBuild,
-}: {
-  error?: string, isAutoBuild: boolean,
-}) =>
-  createAction(ActionType.ExecuteFailed, { error, isAutoBuild });
+const receiveExecuteFailure = ({ error }: { error?: string }) =>
+  createAction(ActionType.ExecuteFailed, { error });
 
 function jsonGet(urlObj: string | UrlObject) {
   const urlStr = url.format(urlObj);
@@ -286,13 +277,11 @@ const performCommonExecute = (crateType: string, tests: boolean): ThunkAction =>
   dispatch(requestExecute());
 
   const state = getState();
-  const isAutoBuild = selectIsAutoBuild(state);
-
   const body: ExecuteRequestBody = selectExecuteRequest(state, crateType, tests);
 
   return jsonPost<ExecuteResponseBody>(routes.execute, body)
-    .then(json => dispatch(receiveExecuteSuccess({ ...json, isAutoBuild })))
-    .catch(json => dispatch(receiveExecuteFailure({ ...json, isAutoBuild })));
+    .then(json => dispatch(receiveExecuteSuccess({ ...json })))
+    .catch(json => dispatch(receiveExecuteFailure({ ...json })));
 };
 
 function performAutoOnly(): ThunkAction {
