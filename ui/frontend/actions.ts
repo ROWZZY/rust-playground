@@ -2,6 +2,7 @@ import fetch from 'isomorphic-fetch';
 import { ThunkAction as ReduxThunkAction } from 'redux-thunk';
 import url, { UrlObject } from 'url';
 
+import api from './reducers/api';
 import {
   changeBacktrace,
   changeChannel,
@@ -206,7 +207,11 @@ function performAutoOnly(): ThunkAction {
   };
 }
 
-const performExecuteOnly = (): ThunkAction => performCommonExecute('bin', false);
+// const performExecuteOnly = (): ThunkAction => performCommonExecute('bin', false);
+const performExecuteOnly = (): ThunkAction => (dispatch, getState) => {
+  const req = selectExecuteRequest(getState(), 'bin', false);
+  dispatch(api.endpoints.execute.initiate(req, { fixedCacheKey: 'executemircache'}))
+};
 const performCompileOnly = (): ThunkAction => performCommonExecute('lib', false);
 const performTestOnly = (): ThunkAction => performCommonExecute('lib', true);
 

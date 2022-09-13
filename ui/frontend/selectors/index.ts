@@ -6,7 +6,6 @@ import api, { selectFormat, selectClippy, selectMiri, selectMacroExpansion } fro
 import { State } from '../reducers';
 import {
   AceResizeKey,
-  Backtrace,
   Channel,
   Edition,
   Orientation,
@@ -22,6 +21,7 @@ const {
   selectEdition,
 } = shared;
 export const {
+  selectBacktraceEnabled,
   selectCrateType,
   selectHasMainFunction,
 } = shared;
@@ -105,11 +105,6 @@ export const getChannelLabel = (state: State) => {
 export const isEditionDefault = createSelector(
   selectEdition,
   edition => edition == Edition.Rust2021,
-);
-
-export const selectBacktraceEnabled = createSelector(
-  (state: State) => state.configuration.backtrace,
-  (backtrace) => backtrace === Backtrace.Enabled,
 );
 
 export const getAdvancedOptionsSet = createSelector(

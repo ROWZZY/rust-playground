@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 import State from '../state';
-import { PrimaryActionCore } from '../types';
+import { Backtrace, PrimaryActionCore } from '../types';
 
 export const selectCode = (state: State) => state.code;
 
@@ -49,6 +49,11 @@ export const selectCrateType = createSelector(
       return 'lib';
     }
   },
+);
+
+export const selectBacktraceEnabled = createSelector(
+  (state: State) => state.configuration.backtrace,
+  (backtrace) => backtrace === Backtrace.Enabled,
 );
 
 export const selectEdition = (state: State) => state.configuration.edition;
